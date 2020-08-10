@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Real Time Data COVID-19</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+  <script>
+  WebFont.load({
+    google: {"families":["Montserrat:400,500,600,700","Noto+Sans:400,700"]},
+    active: function() {
+      sessionStorage.fonts = true;
+    }
+  });
+  </script>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+
+  <link rel="stylesheet" href="assets/vendors/css/base/bootstrap.min.css">
+  <link id="toggleLinkLight" rel="stylesheet" href="assets/vendors/css/base/elisyam-1.5.min.css">
+  <link rel="stylesheet" href="assets/vendors/css/bootstrap-select/bootstrap-select.min.css">
+
+  <script src="assets/vendors/js/base/jquery.min.js"></script>
+  <script type="module" src="app.js" charset="utf-8"></script>
+  <script src="assets/vendors/js/base/core.min.js"></script>
+
+  <script src="assets/vendors/js/nicescroll/nicescroll.min.js"></script>
+
+  <script src="assets/vendors/js/highchart/highmaps.min.js"></script>
+  <script src="assets/vendors/js/highchart/data.min.js"></script>
+  <script src="assets/vendors/js/highchart/world.min.js"></script>
+
+  <script src="assets/vendors/js/axios/axios.min.js"></script>
+
+  <script src="assets/vendors/js/bootstrap-select/bootstrap-select.min.js"></script>
+  <script src="assets/vendors/js/chart/chart.min.js"></script>
+  <script src="assets/vendors/js/papaparse/papaparse.min.js" charset="utf-8"></script>
+
+  <script src="assets/vendors/js/jquery.blockUI/jquery.blockUI.js"></script>
+  <script src="assets/vendors/js/app/app.min.js"></script>
+
+</head>
+<body id="page-top">
+  <div class="page" id="app">
+    <center><h1 style="margin-top: 15px;">Real Time Data COVID-19</h1></center>
+    <div class="page-content d-flex align-items-stretch">
+      <!-- End Left Sidebar -->
+      <div class="content-inner compact active">
+        <div class="container-fluid">
+          <!-- <h2>Filter : China <img src="http://catamphetamine.gitlab.io/country-flag-icons/3x2/US.svg"/></h2> -->
+          <div class="alert alert-shadow alert-lg" role="alert" v-if="cari != null">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" v-on:click="FilterSearch(null)"></button>
+            <!-- src="http://catamphetamine.gitlab.io/country-flag-icons/3x2/US.svg" -->
+            <span v-if="cari.status == 1 && cari.selectNegara.Country_Region != 'Diamond Princess' && cari.selectNegara.Country_Region != 'West Bank and Gaza' && cari.selectNegara.Country_Region != 'MS Zaandam'">
+              <strong>Filter by Country : </strong>
+              <img-flag @update-data="FilterSearch" :data="cari.selectNegara.iso2" :cari="cari"></img-flag> ({{cari.selectNegara.Country_Region}})
+            </span>
+            <span v-if="cari.status == 1 && cari.selectNegara.Country_Region == 'Diamond Princess' || cari.selectNegara.Country_Region == 'MS Zaandam'">
+              <strong>Filter by Ship: </strong>
+              <i class="la la-ship"></i>
+              {{cari.selectNegara.Country_Region}}
+            </span>
+            <span v-if="cari.status == 1 && cari.selectNegara.Country_Region == 'West Bank and Gaza'">
+              <strong>Filter by Territory : </strong>
+              <img src="assets/icons/territories.svg" style="width: 3% !important;">
+              {{cari.selectNegara.Country_Region}}
+            </span>
+          </h2>
+        </div>
+        <div class="row flex-row">
+          <!-- Begin Widget 16 -->
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+            <div class="widget widget-16 has-shadow">
+              <div class="widget-body">
+                <div class="row" style="">
+                  <div class="col-xl-8 d-flex flex-column justify-content-center align-items-center">
+                    <div class="counter">{{data.positif | numberThousand}}</div>
+                    <div class="total-views">Confirmed <span v-if="cari != null && cari.status == 1"> in
+                      {{cari.selectNegara.Country_Region}}</span> </div>
+                    </div>
+                    <div class="col-xl-4 d-flex justify-content-center align-items-center">
+                      <img src="assets/sad.svg" alt="">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Widget 16 -->
+            <!-- Begin Widget 17 -->
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+              <div class="widget widget-17 has-shadow">
+                <div class="widget-body">
+                  <div class="row">
+                    <div class="col-xl-8 d-flex flex-column justify-content-center align-items-center">
+                      <div class="counter">{{data.sembuh | numberThousand}}</div>
+                      <div class="total-views">Recovered <span v-if="cari != null && cari.status == 1"> in
+                        {{cari.selectNegara.Country_Region}}</span> </div>
+                      </div>
+                      <div class="col-xl-4 d-flex justify-content-center align-items-center">
+                        <img src="assets/smile.svg" alt="">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Widget 17 -->
+              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="widget widget-17 has-shadow">
+                  <div class="widget-body">
+                    <div class="row">
+                      <div class="col-xl-8 d-flex flex-column justify-content-center align-items-center">
+                        <div class="counter">{{data.mati | numberThousand}}</div>
+                        <div class="total-views">Deaths <span v-if="cari != null && cari.status == 1"> in
+                          {{cari.selectNegara.Country_Region}}</span>
+                        </div>
+                      </div>
+                      <div class="col-xl-4 d-flex justify-content-center align-items-center">
+                        <img src="assets/cry.svg" alt="">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="row flex-row">
+              <div class="col-md-12 text-center">
+                <h4>Last Update : {{data.lastUpdate |dateTime}}</h4>
+              </div>
+            </div>
+            <div class="row flex-row">
+              <!-- Begin Widget 16 -->
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <div class="widget widget-16 has-shadow">
+                  <div class="widget-body">
+                    <row-map @update-data="FilterSearch" :data="data.ListDataCountry" v-if="renderComponent"></row-map>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <div class="widget widget-16 has-shadow">
+                  <div class="widget-body">
+                    <!-- data.LineChart -->
+                    <line-chart @update-data="FilterSearch" :data="data.LineChart" :cari="cari" v-if="renderComponent"></line-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="widget has-shadow">
+              <div class="widget-header bordered no-actions d-flex align-items-center">
+                <div class="col-lg-6">
+                  <h4>Table Cases</h4>
+                </div>
+
+                <div class="col-lg-6" v-if="cari == null">
+                  <date-selectpicker @update-data="FilterSearch" :data="data.ListDataCountry" :cari="cari" v-if="renderComponent"></date-selectpicker>
+                </div>
+
+              </div>
+              <div class="widget-body">
+                <div class="widget-header bordered no-actions d-none d-sm-block align-items-center p-0">
+                  <!-- <h4>Hover</h4> -->
+                  <table class="table table-hover mb-0">
+                    <thead>
+                      <tr>
+                        <th class="text-center" style="width: 5%;">No</th>
+                        <th style="width: 25%;">Country</th>
+                        <th style="width: 25%;">Last Update</th>
+                        <th class="text-center" style="width: 15%;">Confirmed</th>
+                        <th class="text-center" style="width: 15%;">Deaths</th>
+                        <th class="text-center" style="width: 15%;">Recovered</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+
+                <div class="widget-body p-0">
+                  <data-table @update-data="FilterSearch" :data="data.ListDataCountry" v-if="renderComponent"></data-table>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+          <!-- End Container -->
+          <!-- Begin Page Footer-->
+          <footer class="main-footer pt-4 pb-4">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex align-items-center justify-content-xl-start justify-content-lg-start justify-content-md-start justify-content-center">
+                <!-- <p class="text-gradient-02">Copyright &copy; 2019 Copyright Holder All Rights Reserved.</p> -->
+                <p>Real time Data by CSSE Johns Hopkins University</p>
+              </div>
+            </div>
+          </footer>
+          <!-- End Page Footer -->
+          <a href="#" class="go-top"><i class="la la-arrow-up"></i></a>
+          <!-- Offcanvas Sidebar -->
+        </div>
+        <!-- End Content -->
+      </div>
+      <!-- End Page Content -->
+    </div>
+  </body>
+  </html>
