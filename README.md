@@ -13,3 +13,5 @@ The template I use is [Elisyam](https://themeforest.net/item/elisyam-web-app-adm
 * [Axios](https://github.com/axios/axios) - HTTP Client
 * [Highchart](https://www.highcharts.com/) - Chart that I use
 * [Papaparse](https://www.papaparse.com/) - Parsing CSV Data
+
+Link : [Real Time Data COVID-19](https://aghussb.github.io/corona_dashboard/)
